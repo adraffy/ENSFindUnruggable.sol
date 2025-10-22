@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-import "forge-std/console.sol";
+pragma solidity ^0.8.23;
 
 import {IUniversalResolver} from "@ens/universalResolver/IUniversalResolver.sol";
 import {IMulticallable} from "@ens/resolvers/IMulticallable.sol";
@@ -24,7 +22,7 @@ contract ENSFindUnruggable {
     function findUnruggable(
         bytes calldata name
     ) external view returns (IGatewayVerifier, string[] memory) {
-        bytes[] memory calls = new bytes[](3);
+        bytes[] memory calls = new bytes[](4);
         bytes32 node = NameCoder.namehash(name, 0);
         calls[0] = abi.encodeCall(IAddressResolver.addr, (node, 60));
         calls[1] = abi.encodeCall(IAddressResolver.addr, (node, 1 << 255));
@@ -89,10 +87,10 @@ contract ENSFindUnruggable {
                     _gatewayHash(p.urls) != gatewaysHash ||
                     keccak256(s.context) != contextHash)
             ) {
-				verifier = IGatewayVerifier(address(0));
-				gateways = new string[](0);
-				break;
-			}
+                verifier = IGatewayVerifier(address(0));
+                gateways = new string[](0);
+                break;
+            }
             if (found == 0) {
                 verifier = IGatewayVerifier(s.verifier);
                 gateways = p.urls;
@@ -145,6 +143,6 @@ contract ENSFindUnruggable {
         } catch {
             return s;
         }
-		return PartialSession(verifier, context);
+        return PartialSession(verifier, context);
     }
 }

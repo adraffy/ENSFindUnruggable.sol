@@ -1,5 +1,6 @@
 {
-  "dependencies": {
-    "@adraffy/blocksmith": "^0.1.53"
-  }
+	"devDependencies": {
+		"@adraffy/blocksmith": "^0.1.53",
+		"@types/bun": "latest"
+	}
 }
