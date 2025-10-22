@@ -1,0 +1,15 @@
+# https://book.getfoundry.sh/reference/config/overview
+
+[profile.default]
+
+remappings = [
+	"@urg=lib/unruggable-gateways/contracts/",
+	"@ens=lib/ens-contracts/contracts/",
+	"@oz=lib/openzeppelin-contracts/contracts/",
+	"~src=src/"
+]
+
+# forge i foundry-rs/forge-std
+# forge i ensdomains/ens-contracts
+# forge i unruggable-labs/unruggable-gateways
+# forge i OpenZeppelin/openzeppelin-contracts
