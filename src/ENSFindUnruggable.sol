@@ -5,6 +5,7 @@ import {IUniversalResolver} from "@ens/universalResolver/IUniversalResolver.sol"
 import {IMulticallable} from "@ens/resolvers/IMulticallable.sol";
 import {IAddressResolver} from "@ens/resolvers/profiles/IAddressResolver.sol";
 import {ITextResolver} from "@ens/resolvers/profiles/ITextResolver.sol";
+import {INameResolver} from "@ens/resolvers/profiles/INameResolver.sol";
 import {IExtendedResolver} from "@ens/resolvers/profiles/IExtendedResolver.sol";
 import {EIP3668, OffchainLookup} from "@ens/ccipRead/EIP3668.sol";
 import {BytesUtils} from "@ens/utils/BytesUtils.sol";
@@ -22,12 +23,13 @@ contract ENSFindUnruggable {
     function findUnruggable(
         bytes calldata name
     ) external view returns (IGatewayVerifier, string[] memory) {
-        bytes[] memory calls = new bytes[](4);
+        bytes[] memory calls = new bytes[](5);
         bytes32 node = NameCoder.namehash(name, 0);
         calls[0] = abi.encodeCall(IAddressResolver.addr, (node, 60));
         calls[1] = abi.encodeCall(IAddressResolver.addr, (node, 1 << 255));
         calls[2] = abi.encodeCall(ITextResolver.text, (node, "avatar"));
-        calls[3] = abi.encodeCall(ITextResolver.text, (node, unicode"\uFE0F"));
+        calls[3] = abi.encodeCall(ITextResolver.text, (node, "\uFE0F"));
+        calls[4] = abi.encodeCall(INameResolver.name, (node));
         return _findUnruggable(name, calls);
     }
 
@@ -67,12 +69,12 @@ contract ENSFindUnruggable {
         uint256 found;
         bytes32 contextHash;
         bytes32 gatewaysHash;
-        for (uint256 i; i < calls.length; i++) {
+        for (uint256 i; i < calls.length; ++i) {
             bytes memory call = calls[i];
             if (extended) {
                 call = abi.encodeCall(IExtendedResolver.resolve, (name, call));
             }
-            (bool ok, bytes memory v) = resolver.staticcall{gas: 100_000}(call);
+            (bool ok, bytes memory v) = resolver.staticcall{gas: 250_000}(call);
             if (ok || bytes4(v) != OffchainLookup.selector) continue;
             // TODO: add min length check?
             EIP3668.Params memory p = EIP3668.decode(

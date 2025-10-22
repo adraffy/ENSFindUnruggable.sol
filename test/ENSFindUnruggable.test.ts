@@ -28,4 +28,17 @@ describe("ENSFindUnruggable", () => {
 			"https://lb.drpc.org/gateway/unruggable?network=base",
 		]);
 	});
+
+	it("raffy primary", async () => {
+		const [verifier, gateways] = await finder.findUnruggable(
+			dnsEncode("51050ec063d393217b436747617ad1c2285aeeee.80002105.reverse")
+		);
+		expect(verifier, "verifier").toStrictEqual(
+			"0x074C93CD956B0Dd2cAc0f9F11dDA4d3893a88149"
+		);
+		expect([...gateways], "gateways").toStrictEqual([
+			"https://lb.drpc.org/gateway/unruggable?network=base",
+			"https://base.3668.io"
+		]);
+	});
 });
